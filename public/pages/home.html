@@ -286,23 +286,114 @@
       }
 
       .start-btn {
-        background-color: #3c5b8e;
-        padding: 12px 24px;
-        font-size: 16px;
-        color: white;
-        border: none;
-        border-radius: 8px;
+        padding: 10px 25px;
+      }
+
+      .shiny-btn {
+        position: relative;
+        margin: 0;
+        outline: none;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         cursor: pointer;
-        transition:
-          background-color 0.3s,
-          transform 0.2s;
-        box-shadow: 0 3px 7px rgba(255, 255, 255, 0.3);
+        text-transform: uppercase;
+        background-color: #3c5b8e;
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 400;
+        font-family: inherit;
+        z-index: 0;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.02, 0.01, 0.47, 1);
       }
 
       .start-btn:hover {
         background-color: #2a3c5f;
         transform: scale(1.05);
         box-shadow: 0 5px 12px rgba(255, 255, 255, 0.4);
+      }
+
+      .shiny-btn span {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.7px;
+        z-index: 20;
+      }
+
+      .shiny-btn:after {
+        background: #fff;
+        content: "";
+        height: 155px;
+        left: -75px;
+        opacity: 0.4;
+        position: absolute;
+        top: -50px;
+        transform: rotate(35deg);
+        transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+        width: 50px;
+        z-index: -10;
+      }
+
+      .shiny-btn:hover {
+        animation: rotate624 0.7s ease-in-out both;
+      }
+
+      .shiny-btn:hover span {
+        animation: storm1261 0.7s ease-in-out both;
+        animation-delay: 0.06s;
+      }
+
+      .shiny-btn:hover:after {
+        left: 120%;
+        transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+      }
+
+      @keyframes rotate624 {
+        0% {
+          transform: rotate(0deg) translate3d(0, 0, 0);
+        }
+
+        25% {
+          transform: rotate(3deg) translate3d(0, 0, 0);
+        }
+
+        50% {
+          transform: rotate(-3deg) translate3d(0, 0, 0);
+        }
+
+        75% {
+          transform: rotate(1deg) translate3d(0, 0, 0);
+        }
+
+        100% {
+          transform: rotate(0deg) translate3d(0, 0, 0);
+        }
+      }
+
+      @keyframes storm1261 {
+        0% {
+          transform: translate3d(0, 0, 0) translateZ(0);
+        }
+
+        25% {
+          transform: translate3d(4px, 0, 0) translateZ(0);
+        }
+
+        50% {
+          transform: translate3d(-3px, 0, 0) translateZ(0);
+        }
+
+        75% {
+          transform: translate3d(2px, 0, 0) translateZ(0);
+        }
+
+        100% {
+          transform: translate3d(0, 0, 0) translateZ(0);
+        }
       }
 
       .large-image-container {
@@ -315,7 +406,6 @@
         padding: 20px;
         border-radius: 12px;
         background: rgba(0, 0, 0, 0.5);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
         animation: slideInFromRight 0.8s ease-out forwards;
         animation-delay: 0.4s;
         opacity: 0;
@@ -324,7 +414,46 @@
 
       .large-image-container:hover {
         transform: translateY(-50%) scale(1.05);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      }
+
+      .large-image-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        left: 0;
+        margin: auto;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(-45deg, #0096ff 0%, #40e0d0 100%);
+        z-index: -10;
+        pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 0 20px #0096ff;
+      }
+
+      .large-image-container::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        left: 0;
+        margin: auto;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(-45deg, #0096ff 0%, #40e0d0 100%);
+        z-index: -10;
+        pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 0 20px #40e0d0;
+      }
+
+      .large-image-container:hover::after {
+        transform: rotate(180deg);
+      }
+
+      .large-image-container:hover::before {
+        transform: rotate(-180deg);
       }
 
       .large-image {
@@ -397,6 +526,7 @@
         border-radius: 8px;
         transition: background-color 0.3s ease;
       }
+
       .close-btn {
         position: absolute;
         top: 10px;
@@ -546,6 +676,7 @@
         margin: 4px;
         margin-top: 15px;
         border-radius: 8px;
+        transition: all 0.3s ease;
       }
 
       .social-media-icon-container-2 {
@@ -558,6 +689,7 @@
         margin: 8px;
         margin-top: 15px;
         border-radius: 8px;
+        transition: all 0.3s ease;
       }
 
       .social-media-tray {
@@ -608,11 +740,12 @@
         </span>
       </h2>
       <p>Game on!</p>
-      <button class="start-btn" onclick="startGaming()">Start Gaming</button>
-      <br />
+      <button class="shiny-btn start-btn" onclick="startGaming()">
+        <span>Start Gaming</span>
+      </button>
       <div class="social-media-tray">
         <a href="https://x.com/PeteZahGames/" target="_parent"
-          ><div class="social-media-icon-container">
+          ><div class="social-media-icon-container shiny-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="14"
@@ -627,7 +760,7 @@
             </svg></div
         ></a>
         <a href="https://discord.gg/cYjHFDguxS" target="_parent"
-          ><div class="social-media-icon-container">
+          ><div class="social-media-icon-container shiny-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="14"

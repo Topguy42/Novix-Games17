@@ -43,16 +43,28 @@
       "categories": ["2 player", "skill"]
     },
     {
+      "label": "Buildnow.gg",
+      "url": "/iframe.html?url=/storage/ag/g/buildnowgg",
+      "imageUrl": "/storage/images/main/buildnow.jpeg",
+      "categories": ["shooting", "skill"]
+    },
+    {
+      "label": "Super Star Car",
+      "url": "/iframe.html?url=/storage/ag/g/superstarcar",
+      "imageUrl": "/storage/images/main/superstarcar.jpeg",
+      "categories": ["skill", "racing"]
+    },
+    {
       "label": "Clash Royale",
       "url": "/iframe.html?url=/storage/ag/g/clash-royale",
       "imageUrl": "/storage/images/main/clash.jpeg",
       "categories": ["skill", "action"]
     },
     {
-      "label": "Fortnite",
-      "url": "/iframe.html?url=/storage/ag/g/fortnight",
-      "imageUrl": "/storage/images/main/fakefortnight.jpg",
-      "categories": ["shooting"]
+      "label": "Sky Riders",
+      "url": "/iframe.html?url=/storage/ag/g2/sky-riders/",
+      "imageUrl": "/storage/images/main3/skyriders.png",
+      "categories": ["action", "racing"]
     },
     {
       "label": "Smashy Roads",
@@ -65,6 +77,60 @@
       "url": "/iframe.html?url=/storage/ag/g/smashy-roads-2",
       "imageUrl": "/storage/images/main/smashyroad.webp",
       "categories": ["action"]
+    },
+    {
+      "label": "Space Waves",
+      "url": "/iframe.html?url=/storage/ag/g/spacewaves",
+      "imageUrl": "/storage/images/main/spacewaves.jpg",
+      "categories": ["skill"]
+    },
+    {
+      "label": "Fortnite",
+      "url": "/iframe.html?url=/storage/ag/g/fortnight",
+      "imageUrl": "/storage/images/main/fakefortnight.jpg",
+      "categories": ["shooting"]
+    },
+    {
+      "label": "Highway Racer",
+      "url": "/iframe.html?url=/storage/ag/g/highway-racer",
+      "imageUrl": "/storage/images/main/highway-racer.jpeg",
+      "categories": ["racing"]
+    },
+    {
+      "label": "Highway Racer 2",
+      "url": "/iframe.html?url=/storage/ag/g/highway-race2",
+      "imageUrl": "/storage/images/main/highway-racer2.jpeg",
+      "categories": ["racing"]
+    },
+    {
+      "label": "Buckshot Roulette",
+      "url": "/iframe.html?url=/storage/ag/g2/buckshot-roullete/",
+      "imageUrl": "https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/buckshot-roulette.icon.png",
+      "categories": ["skill", "strategy"]
+    },
+    {
+      "label": "Space Waves",
+      "url": "/iframe.html?url=/storage/ag/g/spacewaves",
+      "imageUrl": "/storage/images/main/spacewaves.jpg",
+      "categories": ["skill"]
+    },
+    {
+      "label": "Fortnite",
+      "url": "/iframe.html?url=/storage/ag/g/fortnight",
+      "imageUrl": "/storage/images/main/fakefortnight.jpg",
+      "categories": ["shooting"]
+    },
+    {
+      "label": "Highway Racer",
+      "url": "/iframe.html?url=/storage/ag/g/highway-racer",
+      "imageUrl": "/storage/images/main/highway-racer.jpeg",
+      "categories": ["racing"]
+    },
+    {
+      "label": "Highway Racer 2",
+      "url": "/iframe.html?url=/storage/ag/g/highway-race2",
+      "imageUrl": "/storage/images/main/highway-racer2.jpeg",
+      "categories": ["racing"]
     },
     {
       "label": "Stickman Hook",
@@ -97,16 +163,10 @@
       "categories": ["skill", "strategy"]
     },
     {
-      "label": "Buckshot Roulette",
-      "url": "/iframe.html?url=/storage/ag/g2/buckshot-roullete/",
-      "imageUrl": "https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/buckshot-roulette.icon.png",
-      "categories": ["skill", "strategy"]
-    },
-    {
-      "label": "Ultrakill",
-      "url": "/iframe.html?url=/storage/ag/g2/ultrakill/",
-      "imageUrl": "/storage/images/main2/ultrakill.jpeg",
-      "categories": ["skill", "strategy"]
+      "label": "N-Gon",
+      "url": "/iframe.html?url=/storage/ag/g/n-gon",
+      "imageUrl": "/storage/images/main/ngon.jpg",
+      "categories": ["strategy"]
     },
     {
       "label": "Race Survival Car",

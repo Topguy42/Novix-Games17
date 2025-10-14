@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <base href="https://cdn.jsdelivr.net/gh/genizy/cg-rip@main/space-waves/">
+    <base href="https://cdn.jsdelivr.net/gh/genizy/cg-rip@main/cg-fc-24/">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -13,7 +13,7 @@
       style="position:fixed;top:0;left:0;width:100%;height:100%;outline:none"></canvas>
 
     <script>
-    const SPLIT_MAP = {"8ff606b44c774c10d2fce0bd2723fafc.wasm": null};
+    const SPLIT_MAP = {"3f1ec9a1f19163366700494e4591a438.wasm": null, "c5595ebba9fbc374c3f8e1984b91c2d1.data": null};
     </script>
 
     <script>
@@ -76,6 +76,9 @@
             console.log("Redirect fetch:", key);
             return origFetch(mergedMap[key], options);
           }
+          if (resource.includes("StreamingAssets")) {
+            return origFetch((document.querySelector('base').href !== null ? document.querySelector('base').href+"/" : "") + "StreamingAssets/"+resource.split("/StreamingAssets/")[1])
+          }
         }
         return origFetch(resource, options);
       };
@@ -97,14 +100,14 @@
       };
 
       const canvas = document.querySelector("#unity-canvas");
-      const loaderUrl = "Build/fe88344541f01bb3050dae072f44e94a.loader.js";
+      const loaderUrl = "Build/Final Build.loader.js";
       const config = {
-        dataUrl: "Build/353a2471699422bef9c05ee3bdcb0512.data",
-        frameworkUrl: "Build/fcf7310a617f1065feef3c749dd51b28.framework.js",
-        codeUrl: "Build/8ff606b44c774c10d2fce0bd2723fafc.wasm",
+        dataUrl: "Build/c5595ebba9fbc374c3f8e1984b91c2d1.data",
+        frameworkUrl: "Build/72dd0711a7cbe34ba37d9ed16313745d.js",
+        codeUrl: "Build/3f1ec9a1f19163366700494e4591a438.wasm",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "Space Waves",
-        productName: "Space Waves",
+        companyName: "CG FC 25",
+        productName: "CG FC 25",
         productVersion: "1.0.0"
       };
 
