@@ -1,0 +1,9 @@
+[
+  { "path": "/api/roblox/easyfun", "target": "https://easyfun.gg" },
+  { "path": "/api/roblox/easyfun-api", "target": "https://api.easyfun.gg" },
+  { "path": "/api/roblox/ldrescdn/easyfun/official-prod-v2", "target": "https://res.ldrescdn.com/easyfun/official-prod-v2" },
+  { "path": "/api/roblox/setupcmp", "target": "https://cmp.setupcmp.com/cmp/cmp/" },
+  { "path": "/api/roblox/ldplayer", "target": "https://appcenter.ldplayer.net" },
+  { "path": "/api/roblox/ldplayer-cdn", "target": "https://cdn.ldplayer.net" },
+  { "path": "/api/roblox/req-ldrescdn", "target": "https://res.ldrescdn.com" }
+]

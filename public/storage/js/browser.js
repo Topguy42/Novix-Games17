@@ -333,14 +333,16 @@ function showTabContextMenu(event, tabId) {
   const tab = tabs.find((t) => t.id === tabId);
 
   const options = [
-    { label: "New Tab", icon: "fa-plus", action: () => {
-      const newTab = createTab();
-      const iframeContainer = document.getElementById("iframe-container");
-      if (iframeContainer) {
-        iframeContainer.appendChild(newTab.frame.frame);
+    {
+      label: "New Tab", icon: "fa-plus", action: () => {
+        const newTab = createTab();
+        const iframeContainer = document.getElementById("iframe-container");
+        if (iframeContainer) {
+          iframeContainer.appendChild(newTab.frame.frame);
+        }
+        switchTab(newTab.id);
       }
-      switchTab(newTab.id);
-    }},
+    },
     { label: "Close Tab", icon: "fa-times", action: () => closeTab(tabId) },
     { label: tab.muted ? "Unmute Tab" : "Mute Tab", icon: tab.muted ? "fa-volume-up" : "fa-volume-mute", action: () => muteTab(tabId) },
     { label: tab.pinned ? "Unpin Tab" : "Pin Tab", icon: "fa-thumbtack", action: () => pinTab(tabId) },
@@ -921,28 +923,4 @@ window.addEventListener("load", async () => {
       menu.classList.remove("show");
     }
   });
-
-  try {
-    function b64(buffer) {
-      let binary = "";
-      const bytes = new Uint8Array(buffer);
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return btoa(binary);
-    }
-    console.log(
-      "%cb",
-      `
-        background-image: url(data:image/png;base64,${b64(arraybuffer)});
-        color: transparent;
-        padding-left: 200px;
-        padding-bottom: 100px;
-        background-size: contain;
-        background-position: center center;
-        background-repeat: no-repeat;
-      `
-    );
-  } catch (e) {}
 });
