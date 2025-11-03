@@ -42,10 +42,6 @@ const bare = createBareServer("/bare/", {
 const barePremium = createBareServer("/api/bare-premium/");
 const app = express();
 app.use(cookieParser());
-const getRandomIPv6 = () => {
-  const i = Math.floor(Math.random() * 5000) + 1;
-  return `2607:5300:205:200:${i.toString(16).padStart(4, '0')}::1`;
-};
 
 app.use(express.static(publicPath));
 app.use("/scram/", express.static(scramjetPath));
@@ -380,12 +376,10 @@ const handleUpgradeVerification = (req, socket, next) => {
 const server = createServer((req, res) => {
   if (bare.shouldRoute(req)) {
     handleHttpVerification(req, res, () => {
-      req.ipv6 = getRandomIPv6();
       bare.routeRequest(req, res);
     });
   } else if (barePremium.shouldRoute(req)) {
     handleHttpVerification(req, res, () => {
-      req.ipv6 = getRandomIPv6();
       barePremium.routeRequest(req, res);
     });
   } else {
@@ -396,17 +390,14 @@ const server = createServer((req, res) => {
 server.on("upgrade", (req, socket, head) => {
   if (bare.shouldRoute(req)) {
     handleUpgradeVerification(req, socket, () => {
-      req.ipv6 = getRandomIPv6();
       bare.routeUpgrade(req, socket, head);
     });
   } else if (barePremium.shouldRoute(req)) {
     handleUpgradeVerification(req, socket, () => {
-      req.ipv6 = getRandomIPv6();
       barePremium.routeUpgrade(req, socket, head);
     });
   } else if (req.url && (req.url.startsWith("/wisp/") || req.url.startsWith("/api/wisp-premium/"))) {
     handleUpgradeVerification(req, socket, () => {
-      req.ipv6 = getRandomIPv6();
       if (req.url.startsWith("/api/wisp-premium/")) {
         req.url = req.url.replace("/api/wisp-premium/", "/wisp/");
       }
