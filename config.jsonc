@@ -1,0 +1,6 @@
+{
+  // Port number for the server to listen on
+  "Port": 3000,
+  // For files that have been removed for legal reasons
+  "LegalRemoved": ["/ag/g/undertale"]
+}

@@ -12,6 +12,7 @@ import fileUpload from 'express-fileupload';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import fs from 'fs';
+import { parseJSONC } from 'jsonc-parser';
 import NodeCache from 'node-cache';
 import fetch from 'node-fetch';
 import crypto from 'node:crypto';
@@ -21,6 +22,17 @@ import path, { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { signinHandler } from './server/api/signin.js';
 import { signupHandler } from './server/api/signup.js';
+
+const configRaw = fs.readFileSync('./config.jsonc', 'utf-8');
+const config = parseJSONC(configRaw);
+const legalRemoved = config.legalRemoved || [];
+
+app.use((req, res, next) => {
+  if (legalRemoved.includes(req.path)) {
+    return res.status(451).send('Removed due to legal reasons');
+  }
+  next();
+});
 
 const cache = new NodeCache({ stdTTL: 86400 });
 let SESSION_SECRET;
@@ -66,14 +78,9 @@ app.use(
   })
 );
 app.use(cookieParser());
-const getRandomIPv6 = () => {
-  const i = Math.floor(Math.random() * 5000) + 1;
-  return `2607:5300:205:200:${i.toString(16).padStart(4, '0')}::1`;
-};
 app.use('/baremux/', express.static(baremuxPath));
 app.use('/epoxy/', express.static(epoxyPath));
 app.use('/libcurl/', express.static(libcurlPath));
-
 app.use(express.static(publicPath));
 app.use(
   '/storage/data',
@@ -378,7 +385,6 @@ redirectRoutes.forEach(({ path, target }) => {
       return res.status(400).json({ error: error.message });
     }
   });
-  app.use(express.static('public'));
   app.use((req, res) => {
     return res.status(404).sendFile(join(__dirname, publicPath, '404.html'));
   });
@@ -566,7 +572,7 @@ redirectRoutes.forEach(({ path, target }) => {
     const domain = req.protocol + '://' + req.get('host');
     res.send(generateTxt(domain, cache.get('urls')));
   });
-  const port = parseInt(process.env.PORT || '3000');
+  const port = parseInt(config.PORT || process.env.PORT || '3000');
   server.keepAliveTimeout = 5000;
   server.headersTimeout = 6000;
 
