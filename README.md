@@ -160,7 +160,7 @@ We plan to clean things up in the future, but for now here is a simple list of t
 - We use SQLite as our database
 - Just because a file has a number after its name does not mean that it is redundant.
 - All static files are saved in `/public/static/`
-- API routes ar all in `server.js`
+- API routes are all in `server.js`
 - If you need any other help feel free to `@mention` a developer on Discord or contact PeteZah directly.
 
 ## Star History
