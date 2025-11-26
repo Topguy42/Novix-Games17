@@ -1,7 +1,6 @@
 import { registerSW } from './register-sw.js';
 import { search } from './search.js';
 import { __uv$config } from './uv/uv.config.js';
-('use strict');
 /**
  * @type {HTMLFormElement}
  */
