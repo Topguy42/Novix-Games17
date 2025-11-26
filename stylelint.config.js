@@ -1,5 +1,5 @@
 export default {
-  extends: ['stylelint-config-standard, "stylelint-config-prettier'],
+  extends: ['stylelint-config-standard'],
   plugins: ['stylelint-order'],
   rules: {
     'no-duplicate-selectors': true,
@@ -9,6 +9,8 @@ export default {
     'selector-no-vendor-prefix': true,
     'media-feature-name-no-vendor-prefix': true,
     'at-rule-no-vendor-prefix': true,
+    'selector-class-pattern': null,
+    'keyframes-name-pattern': null,
     'order/order': [
       'custom-properties',
       'declarations',
@@ -24,12 +26,12 @@ export default {
       {
         ignoreProperties: ['backdrop-filter', 'mask-image', 'scrollbar-width']
       }
-    ],
-    'overrides': [
-      {
-        files: ['**/*.html'],
-        customSyntax: ['postcss-html', { scripts: false }]
-      }
     ]
-  }
+  },
+  overrides: [
+    {
+      files: ['**/*.html'],
+      customSyntax: 'postcss-html'
+    }
+  ]
 };

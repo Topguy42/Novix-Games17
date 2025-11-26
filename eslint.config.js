@@ -67,14 +67,27 @@ export default defineConfig([
       'public/baremux/**/*',
       'public/youtube/**/*.js',
       'public/static/uv/**/*',
-      '.sitemap-base.json'
+      '.sitemap-base.json',
+      '.sitemap-cache.json',
+      'public/pages/other/ai/**/*'
     ]
   },
   {
     files: ['**/*sw.js', '**/uv.js'],
     languageOptions: {
-      env: {
-        serviceworker: true
+      globals: {
+        ...globals.serviceworker
+      }
+    },
+    rules: {
+      $scramjetLoadWorker: 'off'
+    }
+  },
+  {
+    files: ['public/**'],
+    languageOptions: {
+      globals: {
+        ...globals.browser
       }
     }
   }
