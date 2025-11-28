@@ -1,3 +1,5 @@
+// @ts-check
+
 import { registerSW } from './register-sw.js';
 import { search } from './search.js';
 import { __uv$config } from './uv/uv.config.js';
@@ -38,7 +40,10 @@ form.addEventListener('submit', async (event) => {
   location.href = __uv$config.prefix + __uv$config.encodeUrl(url);
 });
 
-// Autofill function with auto-submit
+/**
+ * Autofill function with auto-submit
+ * @param {string} url
+ */
 export function autofill(url) {
   address.value = url;
   form.requestSubmit(); // Automatically submit the form

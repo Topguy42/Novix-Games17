@@ -1,5 +1,5 @@
 import { registerSW } from './register-sw.js';
-import { __uvConfig } from './uv/config.js';
+import { __uv$config } from './uv/config.js';
 
 ('use strict');
 let destination = '';
@@ -7,9 +7,9 @@ let destination = '';
 try {
   destination = new URL(location.hash.slice(1));
 
-  if (destination.hostname.includes('youtube.com') || destination.hostname.includes('google')) {
-    __uvConfig.bare = '/api/bare-premium/bare/';
-    self.__uvConfig = __uvConfig;
+  if (destination.hostname.endsWith('.youtube.com') || destination.hostname === 'youtube.com' || destination.hostname === 'youtube-nocookie.com' || destination.hostname.endsWith('.google.com') || destination.hostname === ('google.com')) {
+    __uv$config.bare = '/api/bare-premium/bare/';
+    self.__uv$config = __uv$config;
   }
 
   if (!destination.protocol) {
@@ -22,7 +22,7 @@ try {
 
 registerSW()
   .then(() => {
-    window.open(__uvConfig.prefix + __uvConfig.encodeUrl(destination), '_self');
+    window.open(__uv$config.prefix + __uv$config.encodeUrl(destination), '_self');
   })
   .catch((err) => {
     alert(`Encountered error:\n${err}`);

@@ -1,4 +1,4 @@
-let __uvConfig = {
+export let __uv$config = {
   prefix: '/static/petezah/',
   bare: '/api/youtube-bypass/bare/',
   encodeUrl: Ultraviolet.codec.xor.encode,
@@ -8,5 +8,4 @@ let __uvConfig = {
   config: '/static/uv/uv.config.js',
   sw: '/static/uv/uv.sw.js'
 };
-self.__uvConfig = __uvConfig;
-export { __uvConfig };
+self.__uv$Config = __uv$config;
