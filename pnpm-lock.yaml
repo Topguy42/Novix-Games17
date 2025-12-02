@@ -69,8 +69,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       nodemailer:
-        specifier: ^7.0.10
-        version: 7.0.10
+        specifier: ^7.0.11
+        version: 7.0.11
       proper-lockfile:
         specifier: ^4.1.2
         version: 4.1.2
@@ -637,8 +637,8 @@ packages:
     engines: {npm: '>=5.0.0'}
     hasBin: true
 
-  nodemailer@7.0.10:
-    resolution: {integrity: sha512-Us/Se1WtT0ylXgNFfyFSx4LElllVLJXQjWi2Xz17xWw7amDKO2MLtFnVp1WACy7GkVGs+oBlRopVNUzlrGSw1w==}
+  nodemailer@7.0.11:
+    resolution: {integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==}
     engines: {node: '>=6.0.0'}
 
   object-assign@4.1.1:
@@ -1462,7 +1462,7 @@ snapshots:
     dependencies:
       node-bin-setup: 1.1.4
 
-  nodemailer@7.0.10: {}
+  nodemailer@7.0.11: {}
 
   object-assign@4.1.1: {}
 
