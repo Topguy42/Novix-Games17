@@ -1,7 +1,37 @@
-import bcrypt from 'bcrypt';
+// @ts-check
+import argon2 from 'argon2';
 import { randomUUID } from 'crypto';
 import db from './db.js';
+/**
+ * Supabase user record structure.
+ * @typedef {Object} SupabaseUser
+ * @property {string} id - Original Supabase user ID.
+ * @property {string} email - User's email address.
+ * @property {string} [encrypted_password] - Optional pre-hashed password from Supabase.
+ * @property {Object} [user_metadata] - Optional metadata object.
+ * @property {string} [user_metadata.name] - Display name.
+ * @property {string} [user_metadata.bio] - User biography.
+ * @property {string} [user_metadata.avatar_url] - Avatar image URL.
+ * @property {string|Date} created_at - Creation timestamp.
+ */
 
+/**
+ * Supabase settings record structure.
+ * @typedef {Object} SupabaseSettings
+ * @property {string} user_id - ID of the user this settings record belongs to.
+ * @property {string} [localstorage_data] - Serialized local storage data.
+ */
+
+/**
+ * Migrates a single user from Supabase to the local database.
+ *
+ * Inserts the user into the `users` table and optionally their settings into
+ * the `user_settings` table. Generates a new UUID for the local user ID.
+ *
+ * @param {SupabaseUser} userData - The Supabase user record to migrate.
+ * @param {SupabaseSettings} [settingsData] - Optional settings record for the user.
+ * @returns {Promise<string|null>} Resolves to the new local user ID, or `null` if migration failed.
+ */
 async function migrateUser(userData, settingsData) {
   try {
     const userId = randomUUID();
@@ -11,7 +41,12 @@ async function migrateUser(userData, settingsData) {
     if (userData.encrypted_password) {
       passwordHash = userData.encrypted_password;
     } else {
-      passwordHash = await bcrypt.hash('temp_password_' + randomUUID(), 10);
+      passwordHash = argon2.hash('temp_password_' + randomUUID(), {
+        type: argon2.argon2id,
+        memoryCost: 65565, // 64 MB
+        timeCost: 5, // iterations
+        parallelism: 1 // threads
+      });
     }
 
     db.prepare(
@@ -47,6 +82,16 @@ async function migrateUser(userData, settingsData) {
   }
 }
 
+/**
+ * Migrates multiple users and their settings from Supabase to the local database.
+ *
+ * Iterates through all provided Supabase users, migrating each one and tracking
+ * successes and failures.
+ *
+ * @param {SupabaseUser[]} supabaseUsers - Array of Supabase user records.
+ * @param {SupabaseSettings[]} [supabaseSettings] - Array of Supabase settings records.
+ * @returns {Promise<{migrated:number, failed:number}>} Summary of migration results.
+ */
 export async function migrateFromSupabase(supabaseUsers, supabaseSettings) {
   console.log('Starting migration from Supabase...');
   let migrated = 0;

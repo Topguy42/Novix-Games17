@@ -13,6 +13,39 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
+/**
+ * SQLite database connection for the PeteZah.
+ *
+ * This module initializes the local SQLite database, applies schema migrations,
+ * and exports a ready-to-use `better-sqlite3` Database instance.
+ *
+ * Tables created:
+ * - `users`: core user accounts
+ * - `changelog`: changelog entries authored by users
+ * - `feedback`: user feedback entries
+ * - `user_settings`: per-user settings (theme, localstorage data)
+ * - `user_sessions`: session tracking with expiry
+ * - `comments`: comments on changelog or feedback
+ * - `likes`: likes on changelog or feedback
+ *
+ * @typedef {Object} User
+ * @property {string} id - UUID for the user.
+ * @property {string} email - User's email address.
+ * @property {string} password_hash - Hashed password.
+ * @property {string} [username] - Optional display name.
+ * @property {string} [bio] - Optional biography.
+ * @property {string} [avatar_url] - Optional avatar image URL.
+ * @property {number} created_at - Timestamp (ms since epoch).
+ * @property {number} updated_at - Timestamp (ms since epoch).
+ * @property {number} [email_verified] - boolean for email verification.
+ * @property {string} [verification_token] - Token for email verification.
+ * @property {number} [is_admin] - boolean for admin privileges.
+ * @property {string} [school] - Optional school name.
+ * @property {number} [age] - Optional age.
+ * @property {string} [ip] - Optional IP address.
+ *
+ * @type {import('better-sqlite3').Database}
+ */
 const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
@@ -61,7 +94,6 @@ try {
 }
 
 db.exec(`
-
   CREATE TABLE IF NOT EXISTS changelog (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,

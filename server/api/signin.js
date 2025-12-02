@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
 import argon2 from 'argon2';
+import bcrypt from 'bcrypt';
 import db from '../db.js';
 
 export async function signinHandler(req, res) {
@@ -10,9 +10,7 @@ export async function signinHandler(req, res) {
   }
 
   try {
-    const user = db.prepare(
-      'SELECT id, email, password_hash, username, bio, avatar_url, email_verified, ip FROM users WHERE email = ?'
-    ).get(email);
+    const user = db.prepare('SELECT id, email, password_hash, username, bio, avatar_url, email_verified, ip FROM users WHERE email = ?').get(email);
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -30,12 +28,11 @@ export async function signinHandler(req, res) {
         // Upgrade to Argon2id
         const newHash = await argon2.hash(password, {
           type: argon2.argon2id,
-          memoryCost: 65565,   // 64 MB
-          timeCost: 5,         // iterations
-          parallelism: 1       // threads (you can adjust if needed)
+          memoryCost: 65565, // 64 MB
+          timeCost: 5, // iterations
+          parallelism: 1 // threads
         });
-        db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
-          .run(newHash, Date.now(), user.id);
+        db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?').run(newHash, Date.now(), user.id);
       }
     } else if (hash.startsWith('$argon2id$')) {
       // Argon2id

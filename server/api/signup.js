@@ -22,9 +22,9 @@ export async function signupHandler(req, res) {
     // Use Argon2id with the same config as signin upgrade
     const passwordHash = await argon2.hash(password, {
       type: argon2.argon2id,
-      memoryCost: 65565,   // 64 MB
-      timeCost: 5,         // iterations
-      parallelism: 1       // threads
+      memoryCost: 65565, // 64 MB
+      timeCost: 5, // iterations
+      parallelism: 1 // threads
     });
 
     const userId = randomUUID();
@@ -45,9 +45,7 @@ export async function signupHandler(req, res) {
     ).run(userId, email, passwordHash, now, now, isAdmin ? 1 : 0, 1, school || null, age || null, ip);
 
     res.status(201).json({
-      message: isFirstUser
-        ? 'Admin account created and verified automatically!'
-        : 'Account created successfully! You can now log in.'
+      message: isFirstUser ? 'Admin account created and verified automatically!' : 'Account created successfully! You can now log in.'
     });
   } catch (error) {
     console.error('Signup error:', error);
