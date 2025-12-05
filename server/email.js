@@ -19,7 +19,7 @@ export async function sendVerificationEmail(email, token, protocol, host) {
   const mailOptions = {
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: 'Verify your PeteZah account',
+    subject: 'Verify your Novix account',
     html: `
       <!DOCTYPE html>
       <html>
@@ -32,7 +32,7 @@ export async function sendVerificationEmail(email, token, protocol, host) {
       </head>
       <body>
         <div class="container">
-          <h2>Welcome to PeteZah!</h2>
+          <h2>Welcome to Novix!</h2>
           <p>Please verify your email address by clicking the button below:</p>
           <a href="${verificationUrl}" class="button">Verify Email</a>
           <p>Or copy this link: ${verificationUrl}</p>
@@ -51,4 +51,3 @@ export async function sendVerificationEmail(email, token, protocol, host) {
     return false;
   }
 }
-
