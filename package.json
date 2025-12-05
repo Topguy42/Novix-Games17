@@ -1,8 +1,8 @@
 {
-  "name": "petezah",
+  "name": "novix",
   "version": "2.0.0",
   "description": "A web proxy to bypass varios filters.  Report questions to https://discord.gg/cYjHFDguxS.",
-  "author": "PeteZah",
+  "author": "Novix",
   "license": "AGPL-3.0-only",
   "type": "module",
   "engines": {
