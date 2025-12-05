@@ -181,7 +181,7 @@ app.post("/api/signup", signupLimiter, signupHandler);
 const pfpLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // 5 uploads per user per hour
-  keyGenerator: req => req.session.user?.id || req.ip,
+  keyGenerator: req => req.session.user?.id || toIPv4(req.headers['x-forwarded-for'] || req.ip),
   message: "Too many profile picture uploads, try again later."
 });
 app.post("/api/upload-profile-pic", pfpLimiter, (req, res) => {
