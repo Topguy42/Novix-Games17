@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: petezahgames
+    name: novixgames
     env: node
     plan: free
     envVars:

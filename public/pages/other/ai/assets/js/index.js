@@ -530,9 +530,9 @@ sendMsg.addEventListener("click", () => {
       isFetching = false;
       document.querySelectorAll('.thinking-indicator').forEach(indicator => indicator.remove());
       NProgress.done();
-      let aiResponse = data || "No response from PeteAI.";
+      let aiResponse = data || "No response from NovixAI.";
       if (prompt.includes("Jailbreak")) {
-        aiResponse = "AI Jailbroken by PeteZah.";
+        aiResponse = "AI Jailbroken by Novix.";
       } else if (prompt.includes("source code")) {
         aiResponse = "I'm sorry, I cannot reveal my source code as per my programming.";
       } else if (prompt.includes("illegal")) {
@@ -580,9 +580,9 @@ function regenerateResponse(regenPrompt, oldMessage, attempt = 0) {
       isFetching = false;
       document.querySelectorAll('.thinking-indicator').forEach(indicator => indicator.remove());
       NProgress.done();
-      let aiResponse = data || "No response from PeteAI.";
+      let aiResponse = data || "No response from NovixAI.";
       if (prompt.includes("Jailbreak")) {
-        aiResponse = "AI Jailbroken by PeteZah.";
+        aiResponse = "AI Jailbroken by Novix.";
       } else if (prompt.includes("source code")) {
         aiResponse = "I'm sorry, I cannot reveal my source code as per my programming.";
       } else if (prompt.includes("illegal")) {

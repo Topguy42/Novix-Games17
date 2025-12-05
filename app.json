@@ -1,8 +1,8 @@
 
 {
-	"name": "PeteZahGames",
-	"description": "Express + static proxy site (PeteZahGames)",
-	"repository": "https://github.com/PeteZah-Games/PeteZahGames",
+	"name": "NovixGames",
+	"description": "Express + static proxy site (NovixGames)",
+	"repository": "https://github.com/Novix-Games/NovixGames",
 	"keywords": ["express", "proxy", "games", "scramjet", "supabase"],
 	"env": {
 		"SUPABASE_URL": {

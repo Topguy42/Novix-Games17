@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				"https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico",
 		},
 		google: { title: "Google", favicon: "https://www.google.com/favicon.ico" },
-		petezah: {
-			title: "PeteZah",
+		novix: {
+			title: "Novix",
 			favicon: "/storage/images/logo-png-removebg-preview.png",
 		},
 	};
