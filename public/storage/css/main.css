@@ -44,7 +44,7 @@ body {
 	display: block;
 	object-fit: contain;
 	border-radius: 50%;
-	filter: brightness(0) saturate(100%) invert(1) sepia(1) saturate(10000%) hue-rotate(-50deg);
+	filter: hue-rotate(330deg) saturate(1.5);
 }
 
 .sidebar-header .toggler {
