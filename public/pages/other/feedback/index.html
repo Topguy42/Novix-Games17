@@ -398,6 +398,7 @@
           document.getElementById('feedback-modal').classList.add('active');
         } else {
           showPopup('Please sign in to post feedback', 'error');
+          localStorage.setItem('returnTo', '/pages/other/feedback/index.html');
           if (window.parent !== window) {
             const iframe = window.frameElement;
             if (iframe) {
