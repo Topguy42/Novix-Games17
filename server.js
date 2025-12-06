@@ -236,7 +236,7 @@ app.use(session({
   store: store,
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   name: 'sessionid',
   cookie: {
     secure: false,
