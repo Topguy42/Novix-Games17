@@ -44,17 +44,11 @@ export async function signupHandler(req, res) {
         bio: null,
         avatar_url: null
       };
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-        res.status(201).json({
-          message: 'Admin account created and verified automatically!'
-        });
+      return res.status(201).json({
+        message: 'Admin account created and verified automatically!'
       });
     } else {
-      res.status(201).json({
+      return res.status(201).json({
         message: 'Account created successfully! You can now log in.'
       });
     }
