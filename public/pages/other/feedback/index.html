@@ -342,21 +342,50 @@
       }
     }
 
+    function isPostLiked(postId) {
+      const likes = JSON.parse(localStorage.getItem('feedback_likes') || '{}');
+      return likes[postId] === true;
+    }
+
+    function setPostLiked(postId, liked) {
+      const likes = JSON.parse(localStorage.getItem('feedback_likes') || '{}');
+      if (liked) {
+        likes[postId] = true;
+      } else {
+        delete likes[postId];
+      }
+      localStorage.setItem('feedback_likes', JSON.stringify(likes));
+    }
+
     function likeFeedback(id, btn) {
+      const isLiked = isPostLiked(id);
+
       fetch('/api/like', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
-        body: JSON.stringify({type: 'feedback', targetId: id})
+        body: JSON.stringify({
+          type: 'feedback',
+          targetId: id,
+          action: isLiked ? 'unlike' : 'like'
+        })
       })
         .then(r => r.json())
         .then(d => {
-          showPopup(d.message || 'Liked!', 'success');
+          if (isLiked) {
+            setPostLiked(id, false);
+            showPopup('Unliked', 'info');
+            btn.style.color = '#ef4444';
+          } else {
+            setPostLiked(id, true);
+            showPopup('Liked!', 'success');
+            btn.style.color = '#22c55e';
+          }
           setTimeout(loadFeedbackLikes, 100);
         })
         .catch(err => {
           console.error('Like error:', err);
-          showPopup('Failed to like', 'error');
+          showPopup('Failed to update like', 'error');
         });
     }
 
