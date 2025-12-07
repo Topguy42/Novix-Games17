@@ -322,13 +322,18 @@
                 </div>
                 <div class="content">${item.content}</div>
                 <div style="margin-top:12px;display:flex;gap:12px;">
-                  <button class="btn" style="background:#232b36;color:#ef4444;padding:4px 18px;font-size:1em;box-shadow:0 1px 4px rgba(239,68,68,0.04);" onclick="likeFeedback('${item.id}', this)"><i class="fa fa-thumbs-up"></i> <span class="like-count" data-id="${item.id}">0</span></button>
-                  <button class="btn" style="background:#232b36;padding:4px 18px;font-size:1em;box-shadow:0 1px 4px rgba(139,92,246,0.04);" onclick="openCommentModal('feedback','${item.id}')"><i class="fa fa-comment" style="color:#fff;"></i></button>
+                  <button class="btn like-btn" data-id="${item.id}" style="background:#232b36;color:#ef4444;padding:4px 18px;font-size:1em;box-shadow:0 1px 4px rgba(239,68,68,0.04);" onclick="likeFeedback('${item.id}', this)"><i class="fa fa-thumbs-up"></i> <span class="like-count" data-id="${item.id}">0</span></button>
+                  <button class="btn" style="background:#232b36;padding:4px 18px;font-size:1em;box-shadow:0 1px 4px rgba(139,92,246,0.04);" onclick="openCommentModal('feedback','${item.id}')"><i class="fa fa-comment" style="color:#fff;"></i> <span class="comment-count" data-id="${item.id}">0</span></button>
                 </div>
                 <div class="comments-list" id="comments-feedback-${item.id}" style="margin-top:10px;"></div>
               </div>
             `;
           }).join('');
+
+          setTimeout(() => {
+            loadFeedbackLikes();
+            feedback.forEach(item => loadCommentsInline('feedback', item.id));
+          }, 100);
         } else {
           list.innerHTML = '<div class="empty-state">No feedback yet. Be the first to share!</div>';
         }
@@ -337,21 +342,104 @@
       }
     }
 
+    function isPostLiked(postId) {
+      const likes = JSON.parse(localStorage.getItem('feedback_likes') || '{}');
+      return likes[postId] === true;
+    }
+
+    function setPostLiked(postId, liked) {
+      const likes = JSON.parse(localStorage.getItem('feedback_likes') || '{}');
+      if (liked) {
+        likes[postId] = true;
+      } else {
+        delete likes[postId];
+      }
+      localStorage.setItem('feedback_likes', JSON.stringify(likes));
+    }
+
     function likeFeedback(id, btn) {
-      fetch('/api/like', {method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({type:'feedback',targetId:id})})
-        .then(r=>r.json()).then(d=>{
-          showPopup(d.message||'Liked!','success');
-          loadFeedbackLikes();
+      const isLiked = isPostLiked(id);
+
+      fetch('/api/like', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({
+          type: 'feedback',
+          targetId: id,
+          action: isLiked ? 'unlike' : 'like'
+        })
+      })
+        .then(r => r.json())
+        .then(d => {
+          if (isLiked) {
+            setPostLiked(id, false);
+            showPopup('Unliked', 'info');
+            btn.style.color = '#ef4444';
+          } else {
+            setPostLiked(id, true);
+            showPopup('Liked!', 'success');
+            btn.style.color = '#22c55e';
+          }
+          setTimeout(loadFeedbackLikes, 100);
+        })
+        .catch(err => {
+          console.error('Like error:', err);
+          showPopup('Failed to update like', 'error');
         });
     }
 
     function loadFeedbackLikes() {
       document.querySelectorAll('.like-count[data-id]').forEach(async el => {
         const id = el.getAttribute('data-id');
-        const r = await fetch(`/api/likes?type=feedback&targetId=${id}`);
-        const d = await r.json();
-        el.textContent = d.count||0;
+        try {
+          const r = await fetch(`/api/likes?type=feedback&targetId=${id}`);
+          const d = await r.json();
+          el.textContent = d.count || 0;
+
+          const btn = document.querySelector(`.like-btn[data-id="${id}"]`);
+          if (btn) {
+            if (isPostLiked(id)) {
+              btn.style.color = '#22c55e';
+            } else {
+              btn.style.color = '#ef4444';
+            }
+          }
+        } catch (err) {
+          console.error('Error loading likes:', err);
+        }
       });
+    }
+
+    function loadCommentsInline(type, id) {
+      const container = document.getElementById(`comments-${type}-${id}`);
+      if (!container) return;
+
+      fetch(`/api/comments?type=${type}&targetId=${id}`)
+        .then(r => r.json())
+        .then(d => {
+          const commentCount = document.querySelector(`.comment-count[data-id="${id}"]`);
+          if (commentCount) {
+            commentCount.textContent = (d.comments && d.comments.length) || 0;
+          }
+
+          if (d.comments && d.comments.length > 0) {
+            container.innerHTML = d.comments.slice(0, 3).map(c => `
+              <div style="padding:8px;background:rgba(20,30,40,0.6);border-radius:8px;margin-bottom:6px;font-size:0.9rem;">
+                <div style="color:#99aabb;font-size:0.8rem;margin-bottom:4px;">
+                  <b>${c.username || 'Anonymous'}</b>
+                </div>
+                <div style="color:#fff;">${c.content}</div>
+              </div>
+            `).join('');
+            if (d.comments.length > 3) {
+              container.innerHTML += `<div style="color:#667788;font-size:0.85rem;text-align:center;padding:4px;">+${d.comments.length - 3} more</div>`;
+            }
+          } else {
+            container.innerHTML = '';
+          }
+        })
+        .catch(err => console.error('Error loading comments:', err));
     }
 
     function openCommentModal(type, id) {
@@ -368,51 +456,69 @@
     document.getElementById('comment-form').onsubmit = async function(e) {
       e.preventDefault();
       const content = document.getElementById('comment-content').value.trim();
-      if (!content) return showPopup('Please enter a comment','error');
+      if (!content) {
+        showPopup('Please enter a comment','error');
+        return;
+      }
       const btn = document.getElementById('submit-comment-btn');
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
-      const r = await fetch('/api/comment', {method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({type:window._commentType,targetId:window._commentTarget,content})});
-      const d = await r.json();
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
-      if (r.ok) {
-        showPopup('Comment posted','success');
-        document.getElementById('comment-content').value = '';
-        loadComments(window._commentType,window._commentTarget);
-      } else {
-        showPopup(d.error||'Failed to post','error');
+      try {
+        const r = await fetch('/api/comment', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({
+            type: window._commentType,
+            targetId: window._commentTarget,
+            content: content
+          })
+        });
+        const d = await r.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        if (r.status === 201 || r.ok) {
+          showPopup('Comment posted','success');
+          document.getElementById('comment-content').value = '';
+          loadComments(window._commentType, window._commentTarget);
+          loadCommentsInline(window._commentType, window._commentTarget);
+        } else {
+          showPopup(d.error || 'Failed to post comment','error');
+        }
+      } catch (error) {
+        console.error('Comment error:', error);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        showPopup('Network error - please try again','error');
       }
     };
 
     function loadComments(type, id) {
-      fetch(`/api/comments?type=${type}&targetId=${id}`).then(r=>r.json()).then(d=>{
-        const list = document.getElementById('comment-modal-list');
-        if (d.comments && d.comments.length) {
-          list.innerHTML = d.comments.map(c=>`<div style='margin-bottom:8px;'><img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'><b>${c.username||'User'}</b>: <span style='color:#fff;'>${c.content}</span></div>`).join('');
-        } else {
-          list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
-        }
-      });
+      fetch(`/api/comments?type=${type}&targetId=${id}`)
+        .then(r => r.json())
+        .then(d => {
+          const list = document.getElementById('comment-modal-list');
+          if (d.comments && d.comments.length) {
+            list.innerHTML = d.comments.map(c => `
+              <div style='margin-bottom:8px;padding:8px;background:rgba(20,30,40,0.4);border-radius:6px;'>
+                <img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'>
+                <b>${c.username || 'Anonymous'}</b>
+                <div style='color:#fff;margin-top:4px;'>${c.content}</div>
+              </div>
+            `).join('');
+          } else {
+            list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
+          }
+          const commentCount = document.querySelector(`.comment-count[data-id="${id}"]`);
+          if (commentCount) {
+            commentCount.textContent = (d.comments && d.comments.length) || 0;
+          }
+        })
+        .catch(err => console.error('Error loading comments:', err));
     }
 
     document.getElementById('add-btn').addEventListener('click', () => {
-      checkAuth().then(() => {
-        if (isAuthenticated) {
-          document.getElementById('feedback-modal').classList.add('active');
-        } else {
-          showPopup('Please sign in to post feedback', 'error');
-          localStorage.setItem('returnTo', '/pages/other/feedback/index.html');
-          if (window.parent !== window) {
-            const iframe = window.frameElement;
-            if (iframe) {
-              iframe.src = '/pages/settings/p.html';
-            }
-          } else {
-            window.location.href = '/pages/settings/p.html';
-          }
-        }
-      });
+      document.getElementById('feedback-modal').classList.add('active');
     });
 
     document.getElementById('close-modal').addEventListener('click', () => {
@@ -421,59 +527,53 @@
 
     document.getElementById('feedback-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const content = document.getElementById('content').value.trim();
-      
-      if (!content) {
+
+      const contentEl = document.getElementById('content');
+      const content = contentEl.value.trim();
+
+      if (!content || content.length === 0) {
         showPopup('Please enter your feedback', 'error');
         return;
       }
-      
+
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-      
+
       try {
         const response = await fetch('/api/feedback', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           credentials: 'include',
-          body: JSON.stringify({ content })
+          body: JSON.stringify({
+            content: content
+          })
         });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
+
+        const responseData = await response.json();
+
+        if (response.status === 201 || response.ok) {
           showPopup('Feedback submitted successfully!', 'success');
+          contentEl.value = '';
           document.getElementById('feedback-form').reset();
           document.getElementById('feedback-modal').classList.remove('active');
-          loadFeedback();
+          setTimeout(loadFeedback, 300);
         } else {
-          showPopup(data.error || 'Failed to submit feedback', 'error');
+          showPopup(responseData.error || 'Failed to submit feedback', 'error');
         }
       } catch (error) {
-        showPopup('Network error', 'error');
+        console.error('Feedback submission error:', error);
+        showPopup('Network error - please try again', 'error');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
       }
     });
 
-    // Check if redirected from signin to automatically open modal
-    const returnTo = localStorage.getItem('returnTo');
-    if (returnTo === '/pages/other/feedback/index.html') {
-      localStorage.removeItem('returnTo');
-      checkAuth().then(() => {
-        loadFeedback();
-        setTimeout(() => {
-          if (isAuthenticated) {
-            document.getElementById('feedback-modal').classList.add('active');
-          }
-        }, 500);
-      });
-    } else {
-      checkAuth();
-      loadFeedback();
-    }
+    checkAuth();
+    loadFeedback();
     setTimeout(loadFeedbackLikes, 500);
   </script>
 </body>

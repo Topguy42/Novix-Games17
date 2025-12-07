@@ -531,21 +531,31 @@ app.post("/api/changelog", (req, res) => {
   }
 });
 app.post("/api/feedback", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
+  const { content } = req.body || {};
+
+  if (!content || typeof content !== 'string' || content.trim().length === 0) {
+    return res.status(400).json({ error: "Feedback content is required" });
   }
+
   try {
-    const { content } = req.body;
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: "Feedback content is required" });
-    }
     const id = randomUUID();
+    const userId = req.session?.user?.id || null;
     const now = Date.now();
-    db.prepare('INSERT INTO feedback (id, user_id, content, created_at) VALUES (?, ?, ?, ?)').run(id, req.session.user.id, content.trim(), now);
-    return res.status(201).json({ message: "Feedback submitted", id });
+
+    db.prepare('INSERT INTO feedback (id, user_id, content, created_at) VALUES (?, ?, ?, ?)').run(
+      id,
+      userId,
+      content.trim(),
+      now
+    );
+
+    return res.status(201).json({
+      message: "Feedback submitted successfully",
+      id: id
+    });
   } catch (error) {
-    console.error('Feedback error:', error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error('Feedback submission error:', error);
+    return res.status(500).json({ error: "Failed to submit feedback" });
   }
 });
 app.get("/api/admin/feedback", (req, res) => {
