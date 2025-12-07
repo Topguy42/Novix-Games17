@@ -456,14 +456,27 @@
     };
 
     function loadComments(type, id) {
-      fetch(`/api/comments?type=${type}&targetId=${id}`).then(r=>r.json()).then(d=>{
-        const list = document.getElementById('comment-modal-list');
-        if (d.comments && d.comments.length) {
-          list.innerHTML = d.comments.map(c=>`<div style='margin-bottom:8px;'><img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'><b>${c.username||'User'}</b>: <span style='color:#fff;'>${c.content}</span></div>`).join('');
-        } else {
-          list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
-        }
-      });
+      fetch(`/api/comments?type=${type}&targetId=${id}`)
+        .then(r => r.json())
+        .then(d => {
+          const list = document.getElementById('comment-modal-list');
+          if (d.comments && d.comments.length) {
+            list.innerHTML = d.comments.map(c => `
+              <div style='margin-bottom:8px;padding:8px;background:rgba(20,30,40,0.4);border-radius:6px;'>
+                <img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'>
+                <b>${c.username || 'Anonymous'}</b>
+                <div style='color:#fff;margin-top:4px;'>${c.content}</div>
+              </div>
+            `).join('');
+          } else {
+            list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
+          }
+          const commentCount = document.querySelector(`.comment-count[data-id="${id}"]`);
+          if (commentCount) {
+            commentCount.textContent = (d.comments && d.comments.length) || 0;
+          }
+        })
+        .catch(err => console.error('Error loading comments:', err));
     }
 
     document.getElementById('add-btn').addEventListener('click', () => {
