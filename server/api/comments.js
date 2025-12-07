@@ -15,9 +15,26 @@ export async function addCommentHandler(req, res) {
 
   try {
     const id = randomUUID();
-    const userId = req.session?.user?.id || null;
+    let userId = req.session?.user?.id || null;
     const now = Date.now();
-    console.log(`[COMMENT] Session user: ${req.session?.user?.id || 'none'}, username: ${req.session?.user?.username || 'none'}`);
+
+    // Try to find user by email from Authorization header if session fails
+    if (!userId) {
+      const authHeader = req.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        try {
+          const user = JSON.parse(Buffer.from(token, 'base64').toString());
+          if (user && user.id) {
+            userId = user.id;
+          }
+        } catch (e) {
+          // Invalid token, continue with null userId
+        }
+      }
+    }
+
+    console.log(`[COMMENT] User ID: ${userId}, Session user: ${req.session?.user?.id || 'none'}`);
     db.prepare('INSERT INTO comments (id, type, target_id, user_id, content, created_at) VALUES (?, ?, ?, ?, ?, ?)')
       .run(id, type, targetId, userId, content, now);
     res.status(201).json({ message: 'Comment posted.', id });
