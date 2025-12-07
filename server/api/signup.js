@@ -22,6 +22,7 @@ export async function signupHandler(req, res) {
     const passwordHash = await bcrypt.hash(password, 10);
     const userId = randomUUID();
     const now = Date.now();
+    const username = email.split('@')[0];
 
     let ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || req.connection?.remoteAddress || null;
     if (ip && typeof ip === 'string' && ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -31,15 +32,15 @@ export async function signupHandler(req, res) {
     const isAdmin = isFirstUser || email === process.env.ADMIN_EMAIL;
 
     db.prepare(`
-      INSERT INTO users (id, email, password_hash, created_at, updated_at, is_admin, email_verified, school, age, ip)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(userId, email, passwordHash, now, now, isAdmin ? 1 : 0, 1, school || null, age || null, ip);
+      INSERT INTO users (id, email, username, password_hash, created_at, updated_at, is_admin, email_verified, school, age, ip)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(userId, email, username, passwordHash, now, now, isAdmin ? 1 : 0, 1, school || null, age || null, ip);
 
     // Auto-login the new user
     req.session.user = {
       id: userId,
       email: email,
-      username: null,
+      username: username,
       bio: null,
       avatar_url: null
     };

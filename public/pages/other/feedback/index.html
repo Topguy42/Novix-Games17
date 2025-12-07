@@ -275,16 +275,40 @@
     let isAuthenticated = false;
 
     async function checkAuth() {
+      // First check localStorage
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        try {
+          window.currentUser = JSON.parse(storedUser);
+          isAuthenticated = true;
+          console.log('Using cached user from localStorage:', window.currentUser.user_metadata?.name || window.currentUser.email);
+          return;
+        } catch (e) {
+          localStorage.removeItem('currentUser');
+        }
+      }
+
+      // Try to fetch fresh auth from server
       try {
-        const response = await fetch('/api/profile', { credentials: 'include' });
-        isAuthenticated = response.ok;
+        const response = await fetch('/api/profile', {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            window.currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            isAuthenticated = true;
+            console.log('Authenticated as:', data.user.user_metadata?.name || data.user.email);
+            return;
+          }
+        }
       } catch (error) {
-        isAuthenticated = false;
+        console.log('Auth check error:', error);
       }
-      // Fallback check: if session failed but localStorage has user, trust localStorage
-      if (!isAuthenticated && localStorage.getItem('loggedInUser')) {
-        isAuthenticated = true;
-      }
+
+      isAuthenticated = false;
     }
 
     async function loadFeedback() {
@@ -313,7 +337,7 @@
         if (feedback && feedback.length > 0) {
           list.innerHTML = feedback.map(item => {
             const date = new Date(item.created_at);
-            const displayName = item.username || (item.email ? item.email.split('@')[0] : 'Anonymous');
+            const displayName = item.username || item.email?.split('@')[0] || 'Anonymous';
             return `
               <div class="feedback-item">
                 <div class="meta">
@@ -357,40 +381,40 @@
       localStorage.setItem('feedback_likes', JSON.stringify(likes));
     }
 
-    function likeFeedback(id, btn) {
+    async function likeFeedback(id, btn) {
       const isLiked = isPostLiked(id);
 
-      fetch('/api/like', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify({
-          type: 'feedback',
-          targetId: id,
-          action: isLiked ? 'unlike' : 'like'
-        })
-      })
-        .then(r => r.json())
-        .then(d => {
-          if (isLiked) {
-            setPostLiked(id, false);
-            showPopup('Unliked', 'info');
-            btn.style.color = '#ef4444';
-          } else {
-            setPostLiked(id, true);
-            showPopup('Liked!', 'success');
-            btn.style.color = '#22c55e';
-          }
-          setTimeout(loadFeedbackLikes, 100);
-        })
-        .catch(err => {
-          console.error('Like error:', err);
-          showPopup('Failed to update like', 'error');
+      try {
+        const r = await fetch('/api/like', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({
+            type: 'feedback',
+            targetId: id,
+            action: isLiked ? 'unlike' : 'like'
+          })
         });
+        const d = await r.json();
+        if (isLiked) {
+          setPostLiked(id, false);
+          showPopup('Unliked', 'info');
+          btn.style.color = '#ef4444';
+        } else {
+          setPostLiked(id, true);
+          showPopup('Liked!', 'success');
+          btn.style.color = '#22c55e';
+        }
+        await loadFeedbackLikes();
+      } catch (err) {
+        console.error('Like error:', err);
+        showPopup('Failed to update like', 'error');
+      }
     }
 
-    function loadFeedbackLikes() {
-      document.querySelectorAll('.like-count[data-id]').forEach(async el => {
+    async function loadFeedbackLikes() {
+      const elements = document.querySelectorAll('.like-count[data-id]');
+      const promises = Array.from(elements).map(async el => {
         const id = el.getAttribute('data-id');
         try {
           const r = await fetch(`/api/likes?type=feedback&targetId=${id}`);
@@ -409,6 +433,7 @@
           console.error('Error loading likes:', err);
         }
       });
+      await Promise.all(promises);
     }
 
     function loadCommentsInline(type, id) {
@@ -424,14 +449,17 @@
           }
 
           if (d.comments && d.comments.length > 0) {
-            container.innerHTML = d.comments.slice(0, 3).map(c => `
+            container.innerHTML = d.comments.slice(0, 3).map(c => {
+              const displayName = c.username || c.email?.split('@')[0] || 'Anonymous';
+              return `
               <div style="padding:8px;background:rgba(20,30,40,0.6);border-radius:8px;margin-bottom:6px;font-size:0.9rem;">
                 <div style="color:#99aabb;font-size:0.8rem;margin-bottom:4px;">
-                  <b>${c.username || 'Anonymous'}</b>
+                  <b>${displayName}</b>
                 </div>
                 <div style="color:#fff;">${c.content}</div>
               </div>
-            `).join('');
+            `;
+            }).join('');
             if (d.comments.length > 3) {
               container.innerHTML += `<div style="color:#667788;font-size:0.85rem;text-align:center;padding:4px;">+${d.comments.length - 3} more</div>`;
             }
@@ -471,7 +499,8 @@
           body: JSON.stringify({
             type: window._commentType,
             targetId: window._commentTarget,
-            content: content
+            content: content,
+            user: window.currentUser || null
           })
         });
         const d = await r.json();
@@ -499,13 +528,16 @@
         .then(d => {
           const list = document.getElementById('comment-modal-list');
           if (d.comments && d.comments.length) {
-            list.innerHTML = d.comments.map(c => `
+            list.innerHTML = d.comments.map(c => {
+              const displayName = c.username || c.email?.split('@')[0] || 'Anonymous';
+              return `
               <div style='margin-bottom:8px;padding:8px;background:rgba(20,30,40,0.4);border-radius:6px;'>
                 <img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'>
-                <b>${c.username || 'Anonymous'}</b>
+                <b>${displayName}</b>
                 <div style='color:#fff;margin-top:4px;'>${c.content}</div>
               </div>
-            `).join('');
+            `;
+            }).join('');
           } else {
             list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
           }
@@ -548,7 +580,8 @@
           },
           credentials: 'include',
           body: JSON.stringify({
-            content: content
+            content: content,
+            user: window.currentUser || null
           })
         });
 
