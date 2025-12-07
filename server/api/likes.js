@@ -12,47 +12,39 @@ export async function likeHandler(req, res) {
     const userId = req.session?.user?.id || null;
 
     if (action === 'unlike') {
-      let result;
       if (userId) {
-        result = db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id = ?')
+        db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id = ?')
           .run(type, targetId, userId);
       } else {
-        result = db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id IS NULL')
+        db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id IS NULL')
           .run(type, targetId);
       }
-      console.log('Unlike result:', result);
       res.json({ message: 'Unliked.' });
     } else {
-      const id = randomUUID();
-      const now = Date.now();
+      const existingLike = userId
+        ? db.prepare('SELECT id FROM likes WHERE type = ? AND target_id = ? AND user_id = ?').get(type, targetId, userId)
+        : db.prepare('SELECT id FROM likes WHERE type = ? AND target_id = ? AND user_id IS NULL').get(type, targetId);
 
-      db.prepare('INSERT INTO likes (id, type, target_id, user_id, created_at) VALUES (?, ?, ?, ?, ?)')
-        .run(id, type, targetId, userId, now);
-
-      res.status(201).json({ message: 'Liked!' });
-    }
-  } catch (error) {
-    if (error.message && error.message.includes('UNIQUE')) {
-      try {
-        const userId = req.session?.user?.id || null;
-        let result;
+      if (existingLike) {
         if (userId) {
-          result = db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id = ?')
+          db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id = ?')
             .run(type, targetId, userId);
         } else {
-          result = db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id IS NULL')
+          db.prepare('DELETE FROM likes WHERE type = ? AND target_id = ? AND user_id IS NULL')
             .run(type, targetId);
         }
-        console.log('Unlike error recovery result:', result);
         res.json({ message: 'Unliked.' });
-      } catch (deleteError) {
-        console.error('Unlike error:', deleteError);
-        res.status(500).json({ error: 'Failed to unlike' });
+      } else {
+        const id = randomUUID();
+        const now = Date.now();
+        db.prepare('INSERT INTO likes (id, type, target_id, user_id, created_at) VALUES (?, ?, ?, ?, ?)')
+          .run(id, type, targetId, userId, now);
+        res.status(201).json({ message: 'Liked!' });
       }
-    } else {
-      console.error('Like error:', error);
-      res.status(500).json({ error: 'Failed to like' });
     }
+  } catch (error) {
+    console.error('Like handler error:', error);
+    res.status(500).json({ error: 'Failed to process like' });
   }
 }
 
