@@ -276,14 +276,36 @@
 
     async function checkAuth() {
       try {
-        const response = await fetch('/api/profile', { credentials: 'include' });
-        isAuthenticated = response.ok;
+        const response = await fetch('/api/profile', {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            window.currentUser = data.user;
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            isAuthenticated = true;
+            console.log('Authenticated as:', data.user.email);
+            return;
+          }
+        }
       } catch (error) {
-        isAuthenticated = false;
+        console.log('Auth check error:', error);
       }
-      // Fallback check: if session failed but localStorage has user, trust localStorage
-      if (!isAuthenticated && localStorage.getItem('loggedInUser')) {
-        isAuthenticated = true;
+
+      // Fallback: check localStorage
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        try {
+          window.currentUser = JSON.parse(storedUser);
+          isAuthenticated = true;
+          console.log('Using cached user:', window.currentUser.email);
+        } catch (e) {
+          isAuthenticated = false;
+        }
+      } else {
+        isAuthenticated = false;
       }
     }
 
