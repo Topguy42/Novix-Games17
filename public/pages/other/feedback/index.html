@@ -500,13 +500,16 @@
         .then(d => {
           const list = document.getElementById('comment-modal-list');
           if (d.comments && d.comments.length) {
-            list.innerHTML = d.comments.map(c => `
+            list.innerHTML = d.comments.map(c => {
+              const displayName = c.username || c.email?.split('@')[0] || 'Anonymous';
+              return `
               <div style='margin-bottom:8px;padding:8px;background:rgba(20,30,40,0.4);border-radius:6px;'>
                 <img src='${c.avatar_url||'/storage/images/main/profile.png'}' style='width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;'>
-                <b>${c.username || 'Anonymous'}</b>
+                <b>${displayName}</b>
                 <div style='color:#fff;margin-top:4px;'>${c.content}</div>
               </div>
-            `).join('');
+            `;
+            }).join('');
           } else {
             list.innerHTML = '<div style="color:#99aabb;">No comments yet.</div>';
           }
