@@ -40,9 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
 				"https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico",
 		},
 		google: { title: "Google", favicon: "https://www.google.com/favicon.ico" },
+		petezah: {
+			title: "Novix",
+			favicon: "https://cdn.builder.io/api/v1/image/assets%2F3357cadaa74948169aaec041da572353%2F399192bd029e4646afba4d22f80c6040?format=webp&width=800",
+		},
 		novix: {
 			title: "Novix",
-			favicon: "/storage/images/logo-png-removebg-preview.png",
+			favicon: "https://cdn.builder.io/api/v1/image/assets%2F3357cadaa74948169aaec041da572353%2F399192bd029e4646afba4d22f80c6040?format=webp&width=800",
 		},
 	};
 
