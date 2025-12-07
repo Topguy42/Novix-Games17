@@ -396,6 +396,15 @@
           const r = await fetch(`/api/likes?type=feedback&targetId=${id}`);
           const d = await r.json();
           el.textContent = d.count || 0;
+
+          const btn = document.querySelector(`.like-btn[data-id="${id}"]`);
+          if (btn) {
+            if (isPostLiked(id)) {
+              btn.style.color = '#22c55e';
+            } else {
+              btn.style.color = '#ef4444';
+            }
+          }
         } catch (err) {
           console.error('Error loading likes:', err);
         }
