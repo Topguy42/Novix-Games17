@@ -357,36 +357,35 @@
       localStorage.setItem('feedback_likes', JSON.stringify(likes));
     }
 
-    function likeFeedback(id, btn) {
+    async function likeFeedback(id, btn) {
       const isLiked = isPostLiked(id);
 
-      fetch('/api/like', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify({
-          type: 'feedback',
-          targetId: id,
-          action: isLiked ? 'unlike' : 'like'
-        })
-      })
-        .then(r => r.json())
-        .then(d => {
-          if (isLiked) {
-            setPostLiked(id, false);
-            showPopup('Unliked', 'info');
-            btn.style.color = '#ef4444';
-          } else {
-            setPostLiked(id, true);
-            showPopup('Liked!', 'success');
-            btn.style.color = '#22c55e';
-          }
-          setTimeout(loadFeedbackLikes, 100);
-        })
-        .catch(err => {
-          console.error('Like error:', err);
-          showPopup('Failed to update like', 'error');
+      try {
+        const r = await fetch('/api/like', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({
+            type: 'feedback',
+            targetId: id,
+            action: isLiked ? 'unlike' : 'like'
+          })
         });
+        const d = await r.json();
+        if (isLiked) {
+          setPostLiked(id, false);
+          showPopup('Unliked', 'info');
+          btn.style.color = '#ef4444';
+        } else {
+          setPostLiked(id, true);
+          showPopup('Liked!', 'success');
+          btn.style.color = '#22c55e';
+        }
+        await loadFeedbackLikes();
+      } catch (err) {
+        console.error('Like error:', err);
+        showPopup('Failed to update like', 'error');
+      }
     }
 
     async function loadFeedbackLikes() {
