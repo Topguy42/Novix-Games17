@@ -425,14 +425,17 @@
           }
 
           if (d.comments && d.comments.length > 0) {
-            container.innerHTML = d.comments.slice(0, 3).map(c => `
+            container.innerHTML = d.comments.slice(0, 3).map(c => {
+              const displayName = c.username || c.email?.split('@')[0] || 'Anonymous';
+              return `
               <div style="padding:8px;background:rgba(20,30,40,0.6);border-radius:8px;margin-bottom:6px;font-size:0.9rem;">
                 <div style="color:#99aabb;font-size:0.8rem;margin-bottom:4px;">
-                  <b>${c.username || 'Anonymous'}</b>
+                  <b>${displayName}</b>
                 </div>
                 <div style="color:#fff;">${c.content}</div>
               </div>
-            `).join('');
+            `;
+            }).join('');
             if (d.comments.length > 3) {
               container.innerHTML += `<div style="color:#667788;font-size:0.85rem;text-align:center;padding:4px;">+${d.comments.length - 3} more</div>`;
             }
