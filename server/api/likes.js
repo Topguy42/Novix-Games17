@@ -45,7 +45,6 @@ export async function getLikesHandler(req, res) {
 
   try {
     const count = db.prepare('SELECT COUNT(*) as count FROM likes WHERE type = ? AND target_id = ?').get(type, targetId)?.count || 0;
-    console.log(`Like count for ${type}/${targetId}: ${count}`);
     res.json({ count });
   } catch (error) {
     console.error('Get likes error:', error);
