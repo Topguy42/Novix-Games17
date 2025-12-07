@@ -73,7 +73,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS feedback (
     id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
+    user_id TEXT,
     content TEXT NOT NULL,
     created_at INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -121,4 +121,3 @@ db.exec(`
 `);
 
 export default db;
-
