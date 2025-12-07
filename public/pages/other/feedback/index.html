@@ -406,37 +406,45 @@
 
     document.getElementById('feedback-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const content = document.getElementById('content').value.trim();
-      
-      if (!content) {
+
+      const contentEl = document.getElementById('content');
+      const content = contentEl.value.trim();
+
+      if (!content || content.length === 0) {
         showPopup('Please enter your feedback', 'error');
         return;
       }
-      
+
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-      
+
       try {
         const response = await fetch('/api/feedback', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           credentials: 'include',
-          body: JSON.stringify({ content })
+          body: JSON.stringify({
+            content: content
+          })
         });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
+
+        const responseData = await response.json();
+
+        if (response.status === 201 || response.ok) {
           showPopup('Feedback submitted successfully!', 'success');
+          contentEl.value = '';
           document.getElementById('feedback-form').reset();
           document.getElementById('feedback-modal').classList.remove('active');
-          loadFeedback();
+          setTimeout(loadFeedback, 300);
         } else {
-          showPopup(data.error || 'Failed to submit feedback', 'error');
+          showPopup(responseData.error || 'Failed to submit feedback', 'error');
         }
       } catch (error) {
-        showPopup('Network error', 'error');
+        console.error('Feedback submission error:', error);
+        showPopup('Network error - please try again', 'error');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
