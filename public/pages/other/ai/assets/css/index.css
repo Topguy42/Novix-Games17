@@ -45,8 +45,8 @@ body {
         left: 0;
         width: 100%;
         height: 550px;
-        --stripes: repeating-linear-gradient(100deg, rgba(20, 40, 60, 0.8) 0%, rgba(20, 40, 60, 0.8) 7%, transparent 10%, transparent 12%, rgba(20, 40, 60, 0.8) 16%);
-        --rays: repeating-linear-gradient(100deg, rgba(30, 50, 90, 0.9) 10%, rgba(20, 40, 80, 0.9) 15%, rgba(30, 50, 90, 0.9) 20%, rgba(20, 40, 80, 0.9) 25%, rgba(30, 50, 90, 0.9) 30%);
+        --stripes: repeating-linear-gradient(100deg, rgba(60, 20, 20, 0.8) 0%, rgba(60, 20, 20, 0.8) 7%, transparent 10%, transparent 12%, rgba(60, 20, 20, 0.8) 16%);
+        --rays: repeating-linear-gradient(100deg, rgba(90, 30, 30, 0.9) 10%, rgba(80, 20, 20, 0.9) 15%, rgba(90, 30, 30, 0.9) 20%, rgba(80, 20, 20, 0.9) 25%, rgba(90, 30, 30, 0.9) 30%);
         background-image: var(--stripes), var(--rays);
         background-size: 300%, 200%;
         background-position: 50% 50%, 50% 50%;
