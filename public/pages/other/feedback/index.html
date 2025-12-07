@@ -343,10 +343,20 @@
     }
 
     function likeFeedback(id, btn) {
-      fetch('/api/like', {method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({type:'feedback',targetId:id})})
-        .then(r=>r.json()).then(d=>{
-          showPopup(d.message||'Liked!','success');
-          loadFeedbackLikes();
+      fetch('/api/like', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({type: 'feedback', targetId: id})
+      })
+        .then(r => r.json())
+        .then(d => {
+          showPopup(d.message || 'Liked!', 'success');
+          setTimeout(loadFeedbackLikes, 100);
+        })
+        .catch(err => {
+          console.error('Like error:', err);
+          showPopup('Failed to like', 'error');
         });
     }
 
