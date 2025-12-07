@@ -368,20 +368,39 @@
     document.getElementById('comment-form').onsubmit = async function(e) {
       e.preventDefault();
       const content = document.getElementById('comment-content').value.trim();
-      if (!content) return showPopup('Please enter a comment','error');
+      if (!content) {
+        showPopup('Please enter a comment','error');
+        return;
+      }
       const btn = document.getElementById('submit-comment-btn');
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
-      const r = await fetch('/api/comment', {method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({type:window._commentType,targetId:window._commentTarget,content})});
-      const d = await r.json();
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
-      if (r.ok) {
-        showPopup('Comment posted','success');
-        document.getElementById('comment-content').value = '';
-        loadComments(window._commentType,window._commentTarget);
-      } else {
-        showPopup(d.error||'Failed to post','error');
+      try {
+        const r = await fetch('/api/comment', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({
+            type: window._commentType,
+            targetId: window._commentTarget,
+            content: content
+          })
+        });
+        const d = await r.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        if (r.status === 201 || r.ok) {
+          showPopup('Comment posted','success');
+          document.getElementById('comment-content').value = '';
+          loadComments(window._commentType, window._commentTarget);
+        } else {
+          showPopup(d.error || 'Failed to post comment','error');
+        }
+      } catch (error) {
+        console.error('Comment error:', error);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        showPopup('Network error - please try again','error');
       }
     };
 
