@@ -275,6 +275,20 @@
     let isAuthenticated = false;
 
     async function checkAuth() {
+      // First check localStorage
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        try {
+          window.currentUser = JSON.parse(storedUser);
+          isAuthenticated = true;
+          console.log('Using cached user from localStorage:', window.currentUser.user_metadata?.name || window.currentUser.email);
+          return;
+        } catch (e) {
+          localStorage.removeItem('currentUser');
+        }
+      }
+
+      // Try to fetch fresh auth from server
       try {
         const response = await fetch('/api/profile', {
           credentials: 'include',
@@ -286,7 +300,7 @@
             window.currentUser = data.user;
             localStorage.setItem('currentUser', JSON.stringify(data.user));
             isAuthenticated = true;
-            console.log('Authenticated as:', data.user.email);
+            console.log('Authenticated as:', data.user.user_metadata?.name || data.user.email);
             return;
           }
         }
@@ -294,19 +308,7 @@
         console.log('Auth check error:', error);
       }
 
-      // Fallback: check localStorage
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        try {
-          window.currentUser = JSON.parse(storedUser);
-          isAuthenticated = true;
-          console.log('Using cached user:', window.currentUser.email);
-        } catch (e) {
-          isAuthenticated = false;
-        }
-      } else {
-        isAuthenticated = false;
-      }
+      isAuthenticated = false;
     }
 
     async function loadFeedback() {
