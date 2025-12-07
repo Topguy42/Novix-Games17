@@ -499,7 +499,8 @@
           body: JSON.stringify({
             type: window._commentType,
             targetId: window._commentTarget,
-            content: content
+            content: content,
+            user: window.currentUser || null
           })
         });
         const d = await r.json();
