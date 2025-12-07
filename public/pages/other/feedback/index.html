@@ -389,8 +389,9 @@
         });
     }
 
-    function loadFeedbackLikes() {
-      document.querySelectorAll('.like-count[data-id]').forEach(async el => {
+    async function loadFeedbackLikes() {
+      const elements = document.querySelectorAll('.like-count[data-id]');
+      const promises = Array.from(elements).map(async el => {
         const id = el.getAttribute('data-id');
         try {
           const r = await fetch(`/api/likes?type=feedback&targetId=${id}`);
@@ -409,6 +410,7 @@
           console.error('Error loading likes:', err);
         }
       });
+      await Promise.all(promises);
     }
 
     function loadCommentsInline(type, id) {
