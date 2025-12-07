@@ -577,7 +577,8 @@
           },
           credentials: 'include',
           body: JSON.stringify({
-            content: content
+            content: content,
+            user: window.currentUser || null
           })
         });
 
