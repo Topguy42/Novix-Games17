@@ -207,15 +207,34 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const autocloak = () => {
-		// Open a new tab with about:blank
-		window.open("about:blank", "_blank");
+		// Open a new tab with about:blank and inject the site into it
+		const popup = window.open("about:blank", "_blank");
+		if (!popup || popup.closed) {
+			alert("Please allow popups for about:blank to work.");
+			return;
+		}
 
-		// Clear history by replacing current state multiple times
-		history.replaceState(null, "", "about:blank");
+		// Set up the popup with site title and favicon
+		popup.document.title = localStorage.getItem("siteTitle") || "Home";
+		const favicon = popup.document.createElement("link");
+		favicon.rel = "icon";
+		favicon.href =
+			localStorage.getItem("siteLogo") ||
+			"/storage/images/logo-png-removebg-preview.png";
+		popup.document.head.appendChild(favicon);
 
-		// Redirect original tab to Google and erase history
+		// Inject the site into the popup
+		const iframe = popup.document.createElement("iframe");
+		iframe.src = "/index.html";
+		iframe.style.cssText = "width: 100vw; height: 100vh; border: none;";
+		popup.document.body.style.margin = "0";
+		popup.document.body.appendChild(iframe);
+
+		// Redirect original tab to Google and clear history
 		setTimeout(() => {
-			window.location.replace("https://www.google.com");
+			window.location.replace(
+				localStorage.getItem("panicUrl") || "https://www.google.com"
+			);
 		}, 100);
 	};
 
