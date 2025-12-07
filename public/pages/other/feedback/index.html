@@ -443,6 +443,7 @@
           showPopup('Comment posted','success');
           document.getElementById('comment-content').value = '';
           loadComments(window._commentType, window._commentTarget);
+          loadCommentsInline(window._commentType, window._commentTarget);
         } else {
           showPopup(d.error || 'Failed to post comment','error');
         }
