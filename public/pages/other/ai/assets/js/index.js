@@ -612,7 +612,7 @@ function regenerateResponse(regenPrompt, oldMessage, attempt = 0) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const welcomeMessage = "Hi, how can I assist you today?  I am PeteAI, you friendly ai chat bot developed by PeteZah from https://petezahgames.com.";
+  const welcomeMessage = "Hi, how can I assist you today?  I am Novix AI, your friendly ai chat bot powered by Novix.";
   typeWriterEffect(welcomeMessage, "ai", false);
   messageHistory.push({ role: "assistant", content: welcomeMessage });
   loadSuggestions();
