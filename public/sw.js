@@ -14,6 +14,21 @@ async function handleRequest(event) {
 
 	const url = new URL(event.request.url);
 
+	// Handle about: protocol URLs
+	if (url.protocol === "about:") {
+		if (url.href === "about:blank") {
+			return new Response("", {
+				status: 200,
+				headers: { "Content-Type": "text/html" }
+			});
+		}
+		// For other about: URLs, return an empty response
+		return new Response("", {
+			status: 200,
+			headers: { "Content-Type": "text/html" }
+		});
+	}
+
 	if (url.hostname.includes("youtube.com") || url.hostname.includes("youtube-nocookie.com")) {
 		const redirectUrl = `/api/youtube-bypass/embed.html#${url.href}`;
 		return Response.redirect(redirectUrl, 302);
