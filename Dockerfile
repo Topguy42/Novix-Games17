@@ -1,5 +1,5 @@
 # ---------- Build Stage ----------
-FROM bitnamisecure/node-min:latest AS builder
+FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -17,7 +17,7 @@ COPY . .
 RUN if pnpm run | grep -q build; then pnpm run build; fi
 
 # ---------- Runtime Stage ----------
-FROM bitnamisecure/node-min:latest
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /usr/src/app
